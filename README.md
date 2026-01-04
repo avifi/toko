@@ -30,7 +30,14 @@ CodeIgniter 3 based e-commerce website with Google Sheets as database.
 Create a Google Sheet with the following worksheets:
 
 ### Products Sheet
-- id, name, description, price, category_id, image1, image2, image3, stock
+- id, name, description, price, category_id, stock
+
+### ProductImages Sheet (Recommended)
+- id, product_id, image_url, sort_order
+
+**Keunggulan:** Unlimited images per product, terorganisir, kontrol urutan tampilan
+
+**Backward Compatibility:** Masih support format lama dengan kolom image1-image5 di Products sheet
 
 ### Categories Sheet
 - id, name, description

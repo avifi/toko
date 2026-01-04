@@ -10,19 +10,46 @@
 
 ### 1. Create Google Sheet
 
-Create a new Google Sheet with three tabs/worksheets:
+Create a new Google Sheet with four tabs/worksheets:
 
 #### Products Sheet
 Create a sheet named "Products" with the following columns (first row):
 
-| id | name | description | price | category_id | image1 | image2 | image3 | image4 | image5 | stock |
-|----|------|-------------|-------|-------------|--------|--------|--------|--------|--------|-------|
+| id | name | description | price | category_id | stock |
+|----|------|-------------|-------|-------------|-------|
 
 Example data:
 ```
-1, Laptop Gaming, Laptop gaming dengan spesifikasi tinggi, 15000000, 1, https://example.com/laptop1.jpg, https://example.com/laptop2.jpg, https://example.com/laptop3.jpg, , , 10
-2, Mouse Wireless, Mouse wireless ergonomis, 150000, 2, https://example.com/mouse1.jpg, , , , , 50
+1, Laptop Gaming, Laptop gaming dengan spesifikasi tinggi, 15000000, 1, 10
+2, Mouse Wireless, Mouse wireless ergonomis, 150000, 2, 50
 ```
+
+**Note:** Format baru tidak menggunakan kolom image1-image5. Gambar produk sekarang dikelola di sheet terpisah "ProductImages".
+
+#### ProductImages Sheet (Sheet Baru)
+Create a sheet named "ProductImages" with the following columns:
+
+| id | product_id | image_url | sort_order |
+|----|------------|-----------|------------|
+
+Example data:
+```
+1, 1, https://example.com/laptop1.jpg, 1
+2, 1, https://example.com/laptop2.jpg, 2
+3, 1, https://example.com/laptop3.jpg, 3
+4, 2, https://example.com/mouse1.jpg, 1
+```
+
+**Keterangan:**
+- `id`: ID unik untuk setiap record gambar
+- `product_id`: ID produk yang sesuai dengan kolom id di Products sheet
+- `image_url`: URL lengkap gambar produk
+- `sort_order`: Urutan tampilan gambar (1 = gambar utama)
+
+**Keunggulan:**
+- Tidak terbatas jumlah gambar per produk
+- Lebih terorganisir dan mudah dikelola
+- Kontrol urutan tampilan gambar
 
 #### Categories Sheet
 Create a sheet named "Categories" with the following columns:

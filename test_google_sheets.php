@@ -44,7 +44,7 @@ if ($api_key === 'YOUR_API_KEY_HERE') {
 }
 
 // Test each sheet
-$sheets = array('Products', 'Categories', 'Store');
+$sheets = array('Products', 'Categories', 'Store', 'ProductImages');
 $all_success = true;
 
 foreach ($sheets as $sheet_name) {
@@ -88,11 +88,13 @@ foreach ($sheets as $sheet_name) {
     echo "\n";
 }
 
-echo "===========================================\n";
+echo "\n===========================================\n";
 
 if ($all_success) {
     echo "✅ All tests passed!\n";
     echo "Your Google Sheets configuration is working correctly.\n";
+    echo "\n📝 Note: ProductImages sheet is optional but recommended.\n";
+    echo "   If not using ProductImages sheet, you can use image1-image5 columns in Products sheet.\n";
 } else {
     echo "❌ Some tests failed.\n";
     echo "\nCommon issues:\n";
@@ -100,7 +102,8 @@ if ($all_success) {
     echo "2. API Key is invalid - Generate a new one in Google Cloud Console\n";
     echo "3. Google Sheets API is not enabled - Enable it in Google Cloud Console\n";
     echo "4. Sheet is not public - Share it with 'Anyone with the link can view'\n";
-    echo "5. Sheet tab names don't match - Must be exactly: Products, Categories, Store\n";
+    echo "5. Sheet tab names don't match - Must be exactly: Products, Categories, Store, ProductImages\n";
+    echo "   (ProductImages is optional for backward compatibility)\n";
 }
 
 echo "\n";

@@ -52,25 +52,38 @@ class Product_model extends CI_Model {
     }
     
     /**
-     * Get product images
+     * Get product images from ProductImages sheet
      */
     public function get_images($product) {
         $images = array();
         
-        if (!empty($product['image1'])) {
-            $images[] = $product['image1'];
-        }
-        if (!empty($product['image2'])) {
-            $images[] = $product['image2'];
-        }
-        if (!empty($product['image3'])) {
-            $images[] = $product['image3'];
-        }
-        if (!empty($product['image4'])) {
-            $images[] = $product['image4'];
-        }
-        if (!empty($product['image5'])) {
-            $images[] = $product['image5'];
+        // Try to get images from separate ProductImages sheet first
+        $product_images = $this->google_sheets->get_where('ProductImages', 'product_id', $product['id']);
+        
+        if (!empty($product_images)) {
+            // Images found in ProductImages sheet
+            foreach ($product_images as $img) {
+                if (!empty($img['image_url'])) {
+                    $images[] = $img['image_url'];
+                }
+            }
+        } else {
+            // Fallback to old format (image1-image5 columns) for backward compatibility
+            if (!empty($product['image1'])) {
+                $images[] = $product['image1'];
+            }
+            if (!empty($product['image2'])) {
+                $images[] = $product['image2'];
+            }
+            if (!empty($product['image3'])) {
+                $images[] = $product['image3'];
+            }
+            if (!empty($product['image4'])) {
+                $images[] = $product['image4'];
+            }
+            if (!empty($product['image5'])) {
+                $images[] = $product['image5'];
+            }
         }
         
         return $images;

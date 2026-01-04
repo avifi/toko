@@ -106,15 +106,29 @@
 
 ### Sheet 1: Products
 ```
-id | name | description | price | category_id | image1 | image2 | image3 | image4 | image5 | stock
+id | name | description | price | category_id | stock
 ```
 
-### Sheet 2: Categories  
+### Sheet 2: ProductImages (Recommended - Sheet Terpisah untuk Gambar)
+```
+id | product_id | image_url | sort_order
+```
+
+**Keunggulan ProductImages Sheet:**
+- ✅ Tidak terbatas jumlah gambar per produk
+- ✅ Lebih terorganisir dan mudah dikelola
+- ✅ Fleksibel - tambah/hapus gambar tanpa mengubah struktur Products
+- ✅ Kontrol urutan tampilan dengan sort_order
+
+**Backward Compatibility:**
+Masih support format lama dengan kolom image1-image5 di Products sheet. Sistem otomatis menggunakan ProductImages sheet jika tersedia, atau fallback ke image1-image5 jika tidak ada.
+
+### Sheet 3: Categories  
 ```
 id | name | description
 ```
 
-### Sheet 3: Store
+### Sheet 4: Store
 ```
 key | value
 ```
