@@ -17,6 +17,7 @@
             <h2 class="text-center mb-4">Tentang Kami</h2>
             <div class="text-center">
                 <p class="lead"><?php echo nl2br($store['about']); ?></p>
+                
             </div>
         </div>
     </div>
@@ -50,12 +51,9 @@
             <?php 
             $featured_products = array_slice($products, 0, 8);
             foreach ($featured_products as $product): 
-                $images = array();
-                if (!empty($product['image1'])) $images[] = $product['image1'];
-                if (!empty($product['image2'])) $images[] = $product['image2'];
-                if (!empty($product['image3'])) $images[] = $product['image3'];
+                $images = $product['thumbnail_image'];
                 
-                $default_image = !empty($images) ? $images[0] : 'https://via.placeholder.com/300x200?text=No+Image';
+                $default_image = !empty($images) ? $images : 'https://placehold.co/300x200?text=No+Image';
             ?>
             <div class="col-6 col-md-4 col-lg-3 mb-4">
                 <div class="card product-card">

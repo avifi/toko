@@ -61,3 +61,5 @@ $route['cart/add'] = 'cart_controller/add';
 $route['cart/update'] = 'cart_controller/update';
 $route['cart/remove'] = 'cart_controller/remove';
 $route['cart/clear'] = 'cart_controller/clear';
+$route['about'] = 'home/about';
+$route['(:any)'] = 'products/detail/$1';

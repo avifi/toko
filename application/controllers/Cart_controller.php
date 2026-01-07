@@ -2,28 +2,40 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Cart_controller extends CI_Controller {
+    protected $theme;
     
     public function __construct() {
         parent::__construct();
         $this->load->model('product_model');
         $this->load->model('category_model');
         $this->load->model('store_model');
-        $this->load->library('cart');
+        $this->load->library('shopping_cart');
+    }
+
+    protected function _init_theme() {
+        // Determine active theme from Store sheet (key: tema)
+        if (empty($this->theme)) {
+             $this->theme = $this->store_model->get('tema', 'tema_default');
+        }
     }
     
     /**
      * View cart page
      */
     public function index() {
+        $this->_init_theme();
         $data['store'] = $this->store_model->get_settings();
         $data['categories'] = $this->category_model->get_all();
-        $data['cart_items'] = $this->cart->contents();
-        $data['cart_count'] = $this->cart->total_items();
-        $data['cart_total'] = $this->cart->total();
+        $data['cart_items'] = $this->shopping_cart->contents();
+        $data['cart_count'] = $this->shopping_cart->total_items();
+        $data['cart_total'] = $this->shopping_cart->total();
+        $data['theme'] = $this->theme;
         
-        $this->load->view('templates/header', $data);
-        $this->load->view('cart/index', $data);
-        $this->load->view('templates/footer');
+        $theme_view = ($this->theme ?: 'tema_default');
+        
+        $this->load->view($theme_view . '/templates/header', $data);
+        $this->load->view($theme_view . '/cart/index', $data);
+        $this->load->view($theme_view . '/templates/footer');
     }
     
     /**
@@ -48,7 +60,7 @@ class Cart_controller extends CI_Controller {
         $images = $this->product_model->get_images($product);
         $image = !empty($images) ? $images[0] : '';
         
-        $this->cart->add(
+        $this->shopping_cart->add(
             $product['id'],
             $product['name'],
             $product['price'],
@@ -59,7 +71,7 @@ class Cart_controller extends CI_Controller {
         echo json_encode(array(
             'success' => true,
             'message' => 'Product added to cart',
-            'cart_count' => $this->cart->total_items()
+            'cart_count' => $this->shopping_cart->total_items()
         ));
     }
     
@@ -75,12 +87,12 @@ class Cart_controller extends CI_Controller {
             return;
         }
         
-        $this->cart->update($product_id, $quantity);
+        $this->shopping_cart->update($product_id, $quantity);
         
         echo json_encode(array(
             'success' => true,
-            'cart_count' => $this->cart->total_items(),
-            'cart_total' => $this->cart->total()
+            'cart_count' => $this->shopping_cart->total_items(),
+            'cart_total' => $this->shopping_cart->total()
         ));
     }
     
@@ -95,13 +107,13 @@ class Cart_controller extends CI_Controller {
             return;
         }
         
-        $this->cart->remove($product_id);
+        $this->shopping_cart->remove($product_id);
         
         echo json_encode(array(
             'success' => true,
             'message' => 'Item removed from cart',
-            'cart_count' => $this->cart->total_items(),
-            'cart_total' => $this->cart->total()
+            'cart_count' => $this->shopping_cart->total_items(),
+            'cart_total' => $this->shopping_cart->total()
         ));
     }
     
@@ -109,7 +121,7 @@ class Cart_controller extends CI_Controller {
      * Clear cart
      */
     public function clear() {
-        $this->cart->clear();
+        $this->shopping_cart->clear();
         redirect('cart_controller');
     }
 }

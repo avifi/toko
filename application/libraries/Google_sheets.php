@@ -13,10 +13,7 @@ class Google_sheets {
     
     public function __construct($params = array()) {
         $this->CI =& get_instance();
-        $this->CI->load->config('google_sheets');
-        
-        $this->sheet_id = $this->CI->config->item('google_sheet_id');
-        $this->api_key = $this->CI->config->item('google_api_key');
+        // $this->CI->load->config('google_sheets');
     }
     
     /**
@@ -26,7 +23,15 @@ class Google_sheets {
      * @return array
      */
     public function get_sheet_data($sheet_name, $range = 'A1:Z1000') {
-        $url = "https://sheets.googleapis.com/v4/spreadsheets/{$this->sheet_id}/values/{$sheet_name}!{$range}?key={$this->api_key}";
+        $sheet_id = $this->CI->config->item('google_sheet_id');
+        $api_key = $this->CI->config->item('google_api_key');
+
+        if (empty($sheet_id) || empty($api_key)) {
+            log_message('error', 'Google Sheets: Missing Config for sheet_id or api_key');
+            return array();
+        }
+
+        $url = "https://sheets.googleapis.com/v4/spreadsheets/{$sheet_id}/values/{$sheet_name}!{$range}?key={$api_key}";
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -66,6 +71,7 @@ class Google_sheets {
         foreach ($values as $row) {
             $item = array();
             foreach ($headers as $index => $header) {
+                // Handle case where row might be shorter than headers
                 $item[$header] = isset($row[$index]) ? $row[$index] : '';
             }
             $result[] = $item;
@@ -82,6 +88,21 @@ class Google_sheets {
         
         foreach ($data as $row) {
             if (isset($row['id']) && $row['id'] == $id) {
+                return $row;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get a single row by slug
+     */
+    public function get_by_slug($sheet_name, $slug) {
+        $data = $this->get_sheet_data($sheet_name);
+        
+        foreach ($data as $row) {
+            if (isset($row['slug']) && $row['slug'] == $slug) {
                 return $row;
             }
         }

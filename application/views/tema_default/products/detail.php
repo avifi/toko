@@ -20,7 +20,7 @@
         <div class="col-md-6 mb-4">
             <div class="product-image-gallery">
                 <!-- Main Image -->
-                <img id="mainImage" src="<?php echo !empty($images) ? $images[0] : 'https://via.placeholder.com/400x400?text=No+Image'; ?>" 
+                <img id="mainImage" src="<?php echo !empty($images) ? $images[0] : 'https://placehold.co/400x400?text=No+Image'; ?>" 
                      class="main-product-image mb-3" alt="<?php echo htmlspecialchars($product['name']); ?>">
                 
                 <!-- Thumbnail Images -->

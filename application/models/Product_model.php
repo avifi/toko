@@ -32,6 +32,10 @@ class Product_model extends CI_Model {
     public function get_by_id($id) {
         return $this->google_sheets->get_by_id($this->sheet_name, $id);
     }
+
+    public function get_by_slug($slug) {
+        return $this->google_sheets->get_by_slug($this->sheet_name, $slug);
+    }
     
     /**
      * Search products
@@ -55,7 +59,7 @@ class Product_model extends CI_Model {
      * Get product images from ProductImages sheet
      */
     public function get_images($product) {
-        $images = array();
+        $images = [$product['thumbnail_image'] => $product['name']];
         
         // Try to get images from separate ProductImages sheet first
         $product_images = $this->google_sheets->get_where('ProductImages', 'product_id', $product['id']);
@@ -64,25 +68,8 @@ class Product_model extends CI_Model {
             // Images found in ProductImages sheet
             foreach ($product_images as $img) {
                 if (!empty($img['image_url'])) {
-                    $images[] = $img['image_url'];
+                    $images[$img['image_url']] = $img['alt'];
                 }
-            }
-        } else {
-            // Fallback to old format (image1-image5 columns) for backward compatibility
-            if (!empty($product['image1'])) {
-                $images[] = $product['image1'];
-            }
-            if (!empty($product['image2'])) {
-                $images[] = $product['image2'];
-            }
-            if (!empty($product['image3'])) {
-                $images[] = $product['image3'];
-            }
-            if (!empty($product['image4'])) {
-                $images[] = $product['image4'];
-            }
-            if (!empty($product['image5'])) {
-                $images[] = $product['image5'];
             }
         }
         

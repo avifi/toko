@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Shopping Cart Library
  * Manages cart using cookies
  */
-class Cart {
+class Shopping_cart {
     
     protected $CI;
     protected $cart_name = 'toko_cart';

@@ -44,7 +44,7 @@ if ($api_key === 'YOUR_API_KEY_HERE') {
 }
 
 // Test each sheet
-$sheets = array('Products', 'Categories', 'Store', 'ProductImages');
+$sheets = array('Products', 'Categories', 'Store', 'ProductImages', 'Sosmed');
 $all_success = true;
 
 foreach ($sheets as $sheet_name) {
@@ -102,7 +102,7 @@ if ($all_success) {
     echo "2. API Key is invalid - Generate a new one in Google Cloud Console\n";
     echo "3. Google Sheets API is not enabled - Enable it in Google Cloud Console\n";
     echo "4. Sheet is not public - Share it with 'Anyone with the link can view'\n";
-    echo "5. Sheet tab names don't match - Must be exactly: Products, Categories, Store, ProductImages\n";
+    echo "5. Sheet tab names don't match - Must be exactly: Products, Categories, Store, ProductImages, Sosmed\n";
     echo "   (ProductImages is optional for backward compatibility)\n";
 }
 
