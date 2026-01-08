@@ -1,4 +1,4 @@
-<div class="header">
+<div class="header" style="position: relative; top: auto; z-index: 1;">
     <h1><i class="bi bi-basket"></i> Keranjang Belanja</h1>
 </div>
 

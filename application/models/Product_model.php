@@ -17,6 +17,11 @@ class Product_model extends CI_Model {
         $products = $this->google_sheets->get_sheet_data($this->sheet_name);
         return $this->filter_active($products);
     }
+
+    public function get_prime() {
+        $products = $this->google_sheets->get_where($this->sheet_name, 'prime', 'Ya');
+        return $this->filter_active($products);
+    }
     
     /**
      * Get products by category

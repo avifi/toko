@@ -1,4 +1,4 @@
-    <div class="header">
+    <div class="header" style="position: relative; top: auto; z-index: 1;">
         <h1><i class="bi bi-shop"></i> <?php echo isset($store['name']) ? $store['name'] : 'Toko Elektronik'; ?></h1>
         <p><?php echo isset($store['slogan']) ? $store['slogan'] : 'Toko Elektronik'; ?></p>
     </div>

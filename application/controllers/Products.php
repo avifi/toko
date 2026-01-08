@@ -31,17 +31,23 @@ class Products extends CI_Controller {
         $data['categories'] = $this->category_model->get_all();
         $data['cart_count'] = $this->shopping_cart->total_items();
         $data['theme'] = $this->theme;
+        $data['seo_description'] = $data['store']['description'];
         $theme_view = ($this->theme ?: 'tema_default');
         
         if ($category_id) {
             $data['products'] = $this->product_model->get_by_category($category_id);
             $data['current_category'] = $this->category_model->get_by_id($category_id);
+            $data['seo_title'] = 'Produk Kami - ' . (isset($data['current_category']['name']) ? $data['current_category']['name'] : 'Toko Online');
+            $data['seo_description'] = $data['current_category']['description'];
         } elseif ($search) {
             $data['products'] = $this->product_model->search($search);
             $data['search_term'] = $search;
+            $data['seo_title'] = 'Produk Kami - ' . $data['search_term'];
         } else {
             $data['products'] = $this->product_model->get_all();
+            $data['seo_title'] = 'Produk Kami - ' . (isset($data['store']['name']) ? $data['store']['name'] : 'Toko Online');
         }
+        $data['seo_image'] = $data['store']['logo'];
         
         $this->load->view($theme_view . '/templates/header', $data);
         $this->load->view($theme_view . '/products/index', $data);
@@ -59,6 +65,9 @@ class Products extends CI_Controller {
         $data['theme'] = $this->theme;
         $theme_view = ($this->theme ?: 'tema_default');
         $data['product'] = $this->product_model->get_by_slug($slug);
+        $data['seo_title'] = $data['product']['name'];
+        $data['seo_description'] = $data['product']['description'];
+        $data['seo_image'] = $data['product']['thumbnail_image'];
         
         if (!$data['product']) {
             show_404();

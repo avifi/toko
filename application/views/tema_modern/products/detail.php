@@ -1,5 +1,5 @@
 <?php if(isset($product)): ?>
-    <div class="header">
+    <div class="header" style="position: relative; top: auto; z-index: 1;">
         <a href="<?php echo base_url('products'); ?>" class="back-btn"><i class="bi bi-arrow-left"></i></a>
         <h1>Detail Produk</h1>
     </div>

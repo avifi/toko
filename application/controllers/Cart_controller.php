@@ -30,6 +30,9 @@ class Cart_controller extends CI_Controller {
         $data['cart_count'] = $this->shopping_cart->total_items();
         $data['cart_total'] = $this->shopping_cart->total();
         $data['theme'] = $this->theme;
+        $data['seo_title'] = 'Keranjang Belanja';
+        $data['seo_description'] = 'Keranjang belanja Anda, ayo checkout sekarang';
+        $data['seo_image'] = $data['store']['logo'];
         
         $theme_view = ($this->theme ?: 'tema_default');
         

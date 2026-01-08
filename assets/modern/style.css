@@ -459,6 +459,14 @@ img {
     gap: 10px;
     background: white;
     margin-bottom: 10px;
+
+    /* sembunyikan scrollbar */
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE & Edge lama */
+}
+
+.categories::-webkit-scrollbar {
+    display: none;                  /* Chrome, Safari */
 }
 
 .category-chip {
@@ -469,6 +477,10 @@ img {
     white-space: nowrap;
     cursor: pointer;
     transition: background 0.3s;
+
+    /* hilangkan underline (jika <a>) */
+    text-decoration: none;
+    color: inherit;
 }
 
 .category-chip.active {
@@ -479,7 +491,9 @@ img {
 .category-chip:hover {
     background: #667eea;
     color: white;
+    text-decoration: none;
 }
+
 
 .product-list {
     padding: 20px;
