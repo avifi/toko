@@ -22,7 +22,7 @@
 <div class="product-list">
     <?php if(isset($products) && !empty($products)): ?>
         <?php foreach($products as $product): ?>
-            <a href="<?php echo site_url('products/detail/' . $product['id']); ?>" class="product-item">
+            <a href="<?php echo site_url($product['slug']); ?>" class="product-item">
                 <div class="product-img">
                      <?php if(filter_var($product['thumbnail_image'], FILTER_VALIDATE_URL)): ?>
                         <img src="<?php echo $product['thumbnail_image']; ?>" alt="<?php echo $product['name']; ?>">

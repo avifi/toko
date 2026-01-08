@@ -13,7 +13,7 @@
     <div class="product-grid">
         <?php if(isset($products) && !empty($products)): ?>
             <?php foreach($products as $product): ?>
-                <a href="<?php echo site_url('products/detail/' . $product['id']); ?>" class="product-card">
+                <a href="<?php echo site_url($product['slug']); ?>" class="product-card">
                     <div class="product-image">
                         <!-- Check if image is URL or Icon class -->
                         <?php if(filter_var($product['thumbnail_image'], FILTER_VALIDATE_URL)): ?>
