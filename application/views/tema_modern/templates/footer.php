@@ -23,38 +23,32 @@
 
     <div id="alert" class="toast"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script src="<?php echo base_url('assets/main.js'); ?>"></script>
     
     <script>
-        // --- Global Actions ---
         function addToCart(productId) {
             $.ajax({
                 url: '<?php echo base_url('cart/add'); ?>',
                 type: 'POST',
                 data: {
                     product_id: productId,
-                    quantity: 1 // Default 1 for quick add
+                    quantity: 1
                 },
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        showAlert("success", "Berhasil masuk keranjang! <i class='bi bi-cart-check'></i>");
-                        // Refresh page or update badge if needed. 
-                        // For simplicity, we just reload if logic allows, but better to update badge dynamically
-                        if(response.cart_count) {
-                            var badge = $('.nav-badge');
-                            if(badge.length) {
-                                badge.text(response.cart_count);
-                            } else {
-                                $('.nav-item i.bi-cart').parent().parent().append('<div class="nav-badge">'+response.cart_count+'</div>');
-                            }
+                        showAlert("success", "Berhasil masuk keranjang <i class='bi bi-cart-check'></i>");
+
+                        var cartNav = $('.nav-item[href*="cart"]');
+                        var badge = cartNav.find('.nav-badge');
+
+                        if (badge.length) {
+                            badge.text(response.cart_count);
+                        } else {
+                            cartNav.append('<div class="nav-badge">'+response.cart_count+'</div>');
                         }
                     } else {
-                        showAlert("danger", "Gagal: " + response.message);
+                        showAlert("danger", response.message);
                     }
                 },
                 error: function() {
@@ -63,43 +57,19 @@
             });
         }
 
-        // Update cart item quantity
-        function updateCartItem(productId, quantity) {
-            $.ajax({
-                url: '<?php echo base_url('cart/update'); ?>',
-                type: 'POST',
-                data: {
-                    product_id: productId,
-                    quantity: quantity
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        // Reload page to update totals
-                        location.reload();
-                    }
-                }
-            });
+        function showAlert(type, message) {
+            var alert = $(
+                '<div class="alert alert-' + type + ' alert-dismissible fade show">' +
+                message +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                '</div>'
+            );
+
+            $('body').prepend(alert);
+
+            setTimeout(() => alert.alert('close'), 3000);
         }
-        
-        // Remove item from cart
-        function removeCartItem(productId) {
-            if (confirm('Hapus produk dari keranjang?')) {
-                $.ajax({
-                    url: '<?php echo base_url('cart/remove'); ?>',
-                    type: 'POST',
-                    data: {
-                        product_id: productId
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload();
-                        }
-                    }
-                });
-            }
-        }
+
 
     </script>
 </body>

@@ -36,9 +36,25 @@
 
     <div style="height: 10px;"></div> <!-- Spacer for action bar -->
 
-    <button class="btn-cart" onclick="addToCart(<?php echo $product['id']; ?>)">
-        <i class="bi bi-cart-plus"></i> Tambah Keranjang
-    </button>
+    <div class="btn-wrapper">
+        <button class="btn-cart" onclick="addToCart(<?php echo $product['id']; ?>)">
+            <i class="bi bi-cart-plus"></i> Tambah Keranjang
+        </button>
+        <?php
+        $whatsapp = isset($store['whatsapp']) ? $store['whatsapp'] : (isset($store['phone']) ? $store['phone'] : '');
+        if (!empty($whatsapp)):
+            // Generate WhatsApp message
+            $message = "Halo, saya ingin memesan:\n\n".$product['name']."\n".$product['description'];
+            
+            $message .= "\nTotal: Rp " . number_format($product['price'], 0, ',', '.') . "\n\nTerima kasih!";
+            $whatsapp_link = "https://wa.me/" . preg_replace('/[^0-9]/', '', $whatsapp) . "?text=" . urlencode($message);
+        ?>
+        <button class="btn-order" onclick="window.location.href = '<?php echo $whatsapp_link; ?>'">
+            <i class="bi bi-cash"></i> Beli Sekarang
+        </button>
+        <?php endif; ?>
+    </div>
+
 <?php else: ?>
     <div class="empty-state">
         <div><i class="bi bi-exclamation-circle"></i></div>

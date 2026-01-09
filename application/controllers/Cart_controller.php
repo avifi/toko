@@ -26,9 +26,7 @@ class Cart_controller extends CI_Controller {
         $this->_init_theme();
         $data['store'] = $this->store_model->get_settings();
         $data['categories'] = $this->category_model->get_all();
-        $data['cart_items'] = $this->shopping_cart->contents();
-        $data['cart_count'] = $this->shopping_cart->total_items();
-        $data['cart_total'] = $this->shopping_cart->total();
+        
         $data['theme'] = $this->theme;
         $data['seo_title'] = 'Keranjang Belanja';
         $data['seo_description'] = 'Keranjang belanja Anda, ayo checkout sekarang';
@@ -60,8 +58,7 @@ class Cart_controller extends CI_Controller {
             return;
         }
         
-        $images = $this->product_model->get_images($product);
-        $image = !empty($images) ? $images[0] : '';
+        $image = $product['thumbnail_image'];
         
         $this->shopping_cart->add(
             $product['id'],
@@ -95,7 +92,8 @@ class Cart_controller extends CI_Controller {
         echo json_encode(array(
             'success' => true,
             'cart_count' => $this->shopping_cart->total_items(),
-            'cart_total' => $this->shopping_cart->total()
+            'cart_total' => $this->shopping_cart->total(),
+            'html' => $this->get_list(true)
         ));
     }
     
@@ -116,7 +114,8 @@ class Cart_controller extends CI_Controller {
             'success' => true,
             'message' => 'Item removed from cart',
             'cart_count' => $this->shopping_cart->total_items(),
-            'cart_total' => $this->shopping_cart->total()
+            'cart_total' => $this->shopping_cart->total(),
+            'html' => $this->get_list(true)
         ));
     }
     
@@ -126,5 +125,32 @@ class Cart_controller extends CI_Controller {
     public function clear() {
         $this->shopping_cart->clear();
         redirect('cart_controller');
+    }
+
+
+    /**
+     * Ambil tampilan list
+     */
+    public function get_list($isi = false)
+    {
+        $this->_init_theme();
+        $data['cart_items'] = $this->shopping_cart->contents();
+        $data['cart_count'] = $this->shopping_cart->total_items();
+        $data['cart_total'] = $this->shopping_cart->total();
+        $data['store'] = $this->store_model->get_settings();
+
+        $theme_view = ($this->theme ?: 'tema_default');
+
+        $html = $this->load->view($theme_view.'/cart/cart_list', $data, true);
+
+        if ($isi == true) {
+            return $html;
+        } else {
+            echo json_encode(array(
+                'success' => true,
+                'html' => $html
+            ));
+        }
+
     }
 }
