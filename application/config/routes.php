@@ -59,4 +59,6 @@ $route['product/(:num)'] = 'products/detail/$1';
 $route['cart'] = 'cart_controller/index';
 $route['cart/(:any)'] = 'cart_controller/$1';
 $route['about'] = 'home/about';
+$route['admin'] = 'admin/dashboard';
+$route['admin/(:any)'] = 'admin/$1';
 $route['(:any)'] = 'products/detail/$1';
