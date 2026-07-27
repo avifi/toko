@@ -1,13 +1,20 @@
-<div class="header" style="position: relative; top: auto; z-index: 1;">
-    <h1><i class="bi bi-basket"></i> Keranjang Belanja</h1>
+<div class="header">
+    <h1><i class="bi bi-bag-fill me-2"></i> Keranjang Belanja</h1>
+    <p>Kelola item pilihan Anda sebelum melakukan order</p>
 </div>
 
-<div id="cart-list" style="padding: 20px;">
-    <!-- diisi oleh ajax -->
+<div class="cart-wrapper" style="padding: 20px 20px 100px;">
+    <div id="cart-list">
+        <!-- Loaded asynchronously by loadCart() -->
+    </div>
 </div>
 
 <script>
     $(document).ready(function () {
+        loadCart();
+    });
+
+    function loadCart() {
         $.ajax({
             url: '<?php echo base_url('cart/get_list'); ?>',
             type: 'POST',
@@ -18,9 +25,8 @@
                 }
             }
         });
-    });
+    }
 
-    // Update cart item quantity
     function updateCartItem(productId, quantity) {
         $.ajax({
             url: '<?php echo base_url('cart/update'); ?>',
@@ -38,9 +44,8 @@
         });
     }
     
-    // Remove item from cart
     function removeCartItem(productId) {
-        if (confirm('Hapus produk dari keranjang?')) {
+        if (confirm('Hapus produk ini dari keranjang belanja?')) {
             $.ajax({
                 url: '<?php echo base_url('cart/remove'); ?>',
                 type: 'POST',
@@ -51,10 +56,10 @@
                 success: function(response) {
                     if (response.success) {
                         $('#cart-list').html(response.html);
+                        showAlert("success", "<i class='bi bi-trash3-fill me-1'></i> Item berhasil dihapus!");
                     }
                 }
             });
         }
     }
 </script>
-

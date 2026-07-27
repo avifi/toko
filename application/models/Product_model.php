@@ -3,77 +3,99 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Product_model extends CI_Model {
     
-    private $sheet_name = 'Products';
+    private $table = 'products';
+    private $tenant_id;
     
     public function __construct() {
         parent::__construct();
-        $this->load->library('google_sheets');
+        $this->tenant_id = $this->config->item('tenant_id') ?: 1;
     }
     
     /**
-     * Get all products
+     * Get all active products for current tenant
      */
     public function get_all() {
-        $products = $this->google_sheets->get_sheet_data($this->sheet_name);
+        $this->db->where('tenant_id', $this->tenant_id);
+        $products = $this->db->get($this->table)->result_array();
         return $this->filter_active($products);
+    }
+
+    /**
+     * Get raw list for admin management scoped to current tenant
+     */
+    public function get_admin_list() {
+        $this->db->select('products.*, categories.name as category_name');
+        $this->db->join('categories', 'categories.id = products.category_id', 'left');
+        $this->db->where('products.tenant_id', $this->tenant_id);
+        $this->db->order_by('products.id', 'DESC');
+        return $this->db->get($this->table)->result_array();
     }
 
     public function get_prime() {
-        $products = $this->google_sheets->get_where($this->sheet_name, 'prime', 'Ya');
+        $this->db->where('tenant_id', $this->tenant_id);
+        $this->db->where('prime', 'Ya');
+        $products = $this->db->get($this->table)->result_array();
         return $this->filter_active($products);
     }
     
     /**
-     * Get products by category
+     * Get products by category for current tenant
      */
     public function get_by_category($category_id) {
-        $products = $this->google_sheets->get_where($this->sheet_name, 'category_id', $category_id);
+        $this->db->where('tenant_id', $this->tenant_id);
+        $this->db->where('category_id', $category_id);
+        $products = $this->db->get($this->table)->result_array();
         return $this->filter_active($products);
     }
     
     /**
-     * Get single product by ID
+     * Get single product by ID for current tenant
      */
     public function get_by_id($id) {
-        return $this->google_sheets->get_by_id($this->sheet_name, $id);
+        return $this->db->get_where($this->table, ['id' => $id, 'tenant_id' => $this->tenant_id])->row_array();
     }
 
     public function get_by_slug($slug) {
-        return $this->google_sheets->get_by_slug($this->sheet_name, $slug);
+        return $this->db->get_where($this->table, ['slug' => $slug, 'tenant_id' => $this->tenant_id])->row_array();
     }
     
     /**
-     * Search products
+     * Search products for current tenant
      */
-    public function search($keyword) {
-        $products = $this->google_sheets->get_sheet_data($this->sheet_name);
-        $result = array();
-        
-        $keyword = strtolower($keyword);
-        foreach ($products as $product) {
-            if (stripos($product['name'], $keyword) !== false || 
-                stripos($product['description'], $keyword) !== false) {
-                $result[] = $product;
-            }
+    public function search($keyword, $sort = 'latest') {
+        $this->db->where('tenant_id', $this->tenant_id);
+        $this->db->group_start();
+        $this->db->like('name', $keyword);
+        $this->db->or_like('description', $keyword);
+        $this->db->group_end();
+
+        if ($sort == 'lowest') {
+            $this->db->order_by('price', 'ASC');
+        } elseif ($sort == 'highest') {
+            $this->db->order_by('price', 'DESC');
+        } else {
+            $this->db->order_by('id', 'DESC');
         }
-        
-        return $this->filter_active($result);
+
+        $products = $this->db->get($this->table)->result_array();
+        return $this->filter_active($products);
     }
     
     /**
-     * Get product images from ProductImages sheet
+     * Get product images from product_images table for current tenant
      */
     public function get_images($product) {
-        $images = [$product['thumbnail_image'] => $product['name']];
+        $images = [];
+        if (!empty($product['thumbnail_image'])) {
+            $images[$product['thumbnail_image']] = isset($product['name']) ? $product['name'] : '';
+        }
         
-        // Try to get images from separate ProductImages sheet first
-        $product_images = $this->google_sheets->get_where('ProductImages', 'product_id', $product['id']);
+        $product_images = $this->db->get_where('product_images', ['product_id' => $product['id'], 'tenant_id' => $this->tenant_id])->result_array();
         
         if (!empty($product_images)) {
-            // Images found in ProductImages sheet
             foreach ($product_images as $img) {
                 if (!empty($img['image_url'])) {
-                    $images[$img['image_url']] = $img['alt'];
+                    $images[$img['image_url']] = isset($img['alt']) ? $img['alt'] : '';
                 }
             }
         }
@@ -87,11 +109,36 @@ class Product_model extends CI_Model {
     private function filter_active($products) {
         $result = array();
         foreach ($products as $product) {
-            // Include products that have stock or no stock field defined
             if (!isset($product['stock']) || $product['stock'] === '' || intval($product['stock']) > 0) {
                 $result[] = $product;
             }
         }
         return $result;
+    }
+
+    /**
+     * Insert product with tenant_id
+     */
+    public function insert($data) {
+        $data['tenant_id'] = $this->tenant_id;
+        return $this->db->insert($this->table, $data);
+    }
+
+    /**
+     * Update product for current tenant
+     */
+    public function update($id, $data) {
+        $this->db->where('id', $id);
+        $this->db->where('tenant_id', $this->tenant_id);
+        return $this->db->update($this->table, $data);
+    }
+
+    /**
+     * Delete product for current tenant
+     */
+    public function delete($id) {
+        $this->db->where('id', $id);
+        $this->db->where('tenant_id', $this->tenant_id);
+        return $this->db->delete($this->table);
     }
 }

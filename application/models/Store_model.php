@@ -3,23 +3,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Store_model extends CI_Model {
     
-    private $sheet_name = 'Store';
+    private $table = 'store';
     private $settings = null;
+    private $tenant_id;
     
     public function __construct() {
         parent::__construct();
-        $this->load->library('google_sheets');
+        $this->tenant_id = $this->config->item('tenant_id') ?: 1;
     }
     
     /**
-     * Get all store settings
+     * Get all store settings for current tenant as key => value associative array
      */
     public function get_settings() {
         if ($this->settings !== null) {
             return $this->settings;
         }
         
-        $data = $this->google_sheets->get_sheet_data($this->sheet_name);
+        $data = $this->db->get_where($this->table, ['tenant_id' => $this->tenant_id])->result_array();
         $settings = array();
         
         foreach ($data as $row) {
@@ -33,10 +34,24 @@ class Store_model extends CI_Model {
     }
     
     /**
-     * Get a specific setting value
+     * Get a specific setting value for current tenant
      */
     public function get($key, $default = '') {
         $settings = $this->get_settings();
         return isset($settings[$key]) ? $settings[$key] : $default;
+    }
+
+    /**
+     * Save or update a setting for current tenant
+     */
+    public function set($key, $value) {
+        $existing = $this->db->get_where($this->table, ['tenant_id' => $this->tenant_id, 'key' => $key])->row();
+        if ($existing) {
+            $this->db->where('tenant_id', $this->tenant_id);
+            $this->db->where('key', $key);
+            return $this->db->update($this->table, ['value' => $value]);
+        } else {
+            return $this->db->insert($this->table, ['tenant_id' => $this->tenant_id, 'key' => $key, 'value' => $value]);
+        }
     }
 }

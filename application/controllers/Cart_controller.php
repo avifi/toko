@@ -13,9 +13,8 @@ class Cart_controller extends CI_Controller {
     }
 
     protected function _init_theme() {
-        // Determine active theme from Store sheet (key: tema)
         if (empty($this->theme)) {
-             $this->theme = $this->store_model->get('tema', 'tema_default');
+             $this->theme = $this->store_model->get('tema', 'tema_modern');
         }
     }
     
@@ -26,13 +25,14 @@ class Cart_controller extends CI_Controller {
         $this->_init_theme();
         $data['store'] = $this->store_model->get_settings();
         $data['categories'] = $this->category_model->get_all();
+        $data['cart_count'] = $this->shopping_cart->total_items();
         
         $data['theme'] = $this->theme;
         $data['seo_title'] = 'Keranjang Belanja';
         $data['seo_description'] = 'Keranjang belanja Anda, ayo checkout sekarang';
-        $data['seo_image'] = $data['store']['logo'];
+        $data['seo_image'] = $data['store']['logo'] ?? '';
         
-        $theme_view = ($this->theme ?: 'tema_default');
+        $theme_view = ($this->theme ?: 'tema_modern');
         
         $this->load->view($theme_view . '/templates/header', $data);
         $this->load->view($theme_view . '/cart/index', $data);
@@ -54,7 +54,7 @@ class Cart_controller extends CI_Controller {
         $product = $this->product_model->get_by_id($product_id);
         
         if (!$product) {
-            echo json_encode(array('success' => false, 'message' => 'Product not found'));
+            echo json_encode(array('success' => false, 'message' => 'Produk tidak ditemukan'));
             return;
         }
         
@@ -70,7 +70,7 @@ class Cart_controller extends CI_Controller {
         
         echo json_encode(array(
             'success' => true,
-            'message' => 'Product added to cart',
+            'message' => 'Produk ditambahkan ke keranjang',
             'cart_count' => $this->shopping_cart->total_items()
         ));
     }
@@ -112,7 +112,7 @@ class Cart_controller extends CI_Controller {
         
         echo json_encode(array(
             'success' => true,
-            'message' => 'Item removed from cart',
+            'message' => 'Produk berhasil dihapus',
             'cart_count' => $this->shopping_cart->total_items(),
             'cart_total' => $this->shopping_cart->total(),
             'html' => $this->get_list(true)
@@ -124,9 +124,8 @@ class Cart_controller extends CI_Controller {
      */
     public function clear() {
         $this->shopping_cart->clear();
-        redirect('cart_controller');
+        redirect('cart');
     }
-
 
     /**
      * Ambil tampilan list
@@ -139,9 +138,9 @@ class Cart_controller extends CI_Controller {
         $data['cart_total'] = $this->shopping_cart->total();
         $data['store'] = $this->store_model->get_settings();
 
-        $theme_view = ($this->theme ?: 'tema_default');
+        $theme_view = ($this->theme ?: 'tema_modern');
 
-        $html = $this->load->view($theme_view.'/cart/cart_list', $data, true);
+        $html = $this->load->view($theme_view . '/cart/cart_list', $data, true);
 
         if ($isi == true) {
             return $html;
@@ -151,6 +150,5 @@ class Cart_controller extends CI_Controller {
                 'html' => $html
             ));
         }
-
     }
 }

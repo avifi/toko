@@ -12,36 +12,33 @@ class MultiTenant {
 
     public function initialize()
     {
-        // Check if running via CLI (migrations, etc) - skip tenant check
+        // Check if running via CLI (migrations, etc) - default tenant_id = 1
         if (is_cli()) {
+            $this->CI->config->set_item('tenant_id', 1);
             return;
         }
 
         $domain = $_SERVER['HTTP_HOST'];
         
-        // Remove port if present
+        // Remove port if present (e.g. localhost:8080 -> localhost)
         if (strpos($domain, ':') !== false) {
             $domain = explode(':', $domain)[0];
         }
 
-        // Load database if not loaded (though pre_controller usually runs after DB is available if loaded in autoload)
-        // But get_instance might not have db loaded yet if it's too early. 
-        // Hook point 'pre_controller' calls your classes.
-        // Let's ensure we can access DB.
         if (!isset($this->CI->db)) {
             $this->CI->load->database();
         }
 
+        // Search tenant by domain
         $tenant = $this->CI->db->get_where('tenants', ['domain' => $domain])->row();
 
         if ($tenant) {
-            // Set configuration items
-            $this->CI->config->set_item('google_sheet_id', $tenant->google_sheet_id);
-            $this->CI->config->set_item('google_api_key', $tenant->google_api_key);
+            $this->CI->config->set_item('tenant_id', (int)$tenant->id);
+            $this->CI->config->set_item('tenant_domain', $tenant->domain);
         } else {
-            // Optional: Handle unknown tenant (redirect, show 404, or fallback to default)
-            // For now, we will just log it or do nothing so it uses default config if any.
-            log_message('error', 'MultiTenant: No tenant found for domain ' . $domain);
+            // Default fallback to tenant_id = 1 if domain is not registered
+            $this->CI->config->set_item('tenant_id', 1);
+            log_message('debug', 'MultiTenant: Domain ' . $domain . ' not registered in tenants table. Fallback to tenant_id = 1');
         }
     }
 }
